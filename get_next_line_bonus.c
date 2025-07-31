@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rgomes-d <rgomes-d@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 12:47:47 by rgomes-d          #+#    #+#             */
-/*   Updated: 2025/07/31 19:08:37 by rgomes-d         ###   ########.fr       */
+/*   Updated: 2025/07/31 19:27:31 by rgomes-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 int		ft_include_nnode(t_list **lst, char *str);
 char	*ft_fillnl(t_list **lst, int size_nl);
@@ -19,27 +19,27 @@ int		ft_fillstock(int fd, t_list **head);
 
 char	*get_next_line(int fd)
 {
-	static t_list	*stock = NULL;
+	static t_list	*stock[FILE_DESCRIPTORS] = {0};
 	char			*rtn;
 	int				size_nl;
 
 	rtn = NULL;
 	if (fd < 0)
 	{
-		ft_cleanls(&stock, 1);
-		stock = NULL;
+		ft_cleanls(&stock[fd], 1);
+		stock[fd] = NULL;
 		return (NULL);
 	}
-	if (ft_fillstock(fd, &stock))
-		return (ft_cleanls(&stock, 1));
-	size_nl = ft_verify_nlend(&stock);
+	if (ft_fillstock(fd, &stock[fd]))
+		return (ft_cleanls(&stock[fd], 1));
+	size_nl = ft_verify_nlend(&stock[fd]);
 	if (size_nl == 0)
 		return (get_next_line(fd));
-	rtn = ft_fillnl(&stock, size_nl);
-	if (stock && ((char *)stock->content)[0] == 0)
+	rtn = ft_fillnl(&stock[fd], size_nl);
+	if (stock[fd] && ((char *)stock[fd]->content)[0] == 0)
 	{
-		ft_cleanls(&stock, 1);
-		stock = NULL;
+		ft_cleanls(&stock[fd], 1);
+		stock[fd] = NULL;
 	}
 	return (rtn);
 }
