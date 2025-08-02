@@ -6,7 +6,7 @@
 /*   By: rgomes-d <rgomes-d@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 12:47:47 by rgomes-d          #+#    #+#             */
-/*   Updated: 2025/07/31 19:08:37 by rgomes-d         ###   ########.fr       */
+/*   Updated: 2025/08/01 19:26:39 by rgomes-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ char	*get_next_line(int fd)
 	if (size_nl == 0)
 		return (get_next_line(fd));
 	rtn = ft_fillnl(&stock, size_nl);
+	if (!rtn)
+		return (ft_cleanls(&stock, 1));
 	if (stock && ((char *)stock->content)[0] == 0)
 	{
 		ft_cleanls(&stock, 1);
@@ -58,10 +60,9 @@ int	ft_fillstock(int fd, t_list **head)
 		return (1);
 	size_read = read(fd, b_read, BUFFER_SIZE);
 	if ((size_read < 0) || (size_read == 0 && !*head))
-	{
 		free(b_read);
+	if ((size_read < 0) || (size_read == 0 && !*head))
 		return (1);
-	}
 	if (ft_include_nnode(head, b_read))
 		return (1);
 	return (0);
@@ -104,6 +105,8 @@ char	*ft_fillnl(t_list **lst, int size_nl)
 
 	i_rtn = 0;
 	rtn = (malloc(size_nl + 1));
+	if (!rtn)
+		return (NULL);
 	while (i_rtn < size_nl)
 	{
 		i = 0;
@@ -112,10 +115,9 @@ char	*ft_fillnl(t_list **lst, int size_nl)
 			|| ((char *)aux->content)[0] == 0))
 			rtn[i_rtn++] = ((char *)aux->content)[i++];
 		if (((char *)aux->content)[i] == 0 && i > 0)
-		{
 			*lst = aux->next;
+		if (((char *)aux->content)[i] == 0 && i > 0)
 			ft_cleanls(&aux, 0);
-		}
 		else
 			ft_lst_content_substr(&*lst, i);
 	}
