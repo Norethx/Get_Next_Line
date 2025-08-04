@@ -6,7 +6,7 @@
 /*   By: rgomes-d <rgomes-d@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 12:47:47 by rgomes-d          #+#    #+#             */
-/*   Updated: 2025/08/01 19:26:39 by rgomes-d         ###   ########.fr       */
+/*   Updated: 2025/08/04 14:00:19 by rgomes-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ char	*get_next_line(int fd)
 	char			*rtn;
 	int				size_nl;
 
+	size_nl = 0;
 	rtn = NULL;
 	if (fd < 0)
 	{
@@ -30,32 +31,27 @@ char	*get_next_line(int fd)
 		stock = NULL;
 		return (NULL);
 	}
-	if (ft_fillstock(fd, &stock))
-		return (ft_cleanls(&stock, 1));
-	size_nl = ft_verify_nlend(&stock);
-	if (size_nl == 0)
-		return (get_next_line(fd));
+	while (size_nl == 0)
+	{
+		if (ft_fillstock(fd, &stock))
+			return (ft_cleanls(&stock, 1));
+		size_nl = ft_verify_nlend(&stock);
+	}
 	rtn = ft_fillnl(&stock, size_nl);
 	if (!rtn)
 		return (ft_cleanls(&stock, 1));
 	if (stock && ((char *)stock->content)[0] == 0)
-	{
 		ft_cleanls(&stock, 1);
-		stock = NULL;
-	}
 	return (rtn);
 }
 
 int	ft_fillstock(int fd, t_list **head)
 {
-	int				size_read;
-	char			*b_read;
-	unsigned int	i;
+	int		size_read;
+	char	*b_read;
+	char	*b_read_rs;
 
-	i = 0;
 	b_read = malloc(BUFFER_SIZE + 1);
-	while (i <= BUFFER_SIZE)
-		b_read[i++] = 0;
 	if (!b_read)
 		return (1);
 	size_read = read(fd, b_read, BUFFER_SIZE);
@@ -63,7 +59,15 @@ int	ft_fillstock(int fd, t_list **head)
 		free(b_read);
 	if ((size_read < 0) || (size_read == 0 && !*head))
 		return (1);
-	if (ft_include_nnode(head, b_read))
+	b_read[size_read] = 0;
+	b_read_rs = (char *)malloc(size_read + 1);
+	if (!b_read_rs)
+		return (1);
+	b_read_rs[size_read] = 0;
+	while (*b_read != '\0')
+		*(b_read_rs++) = *(b_read++);
+	free(b_read - size_read);
+	if (ft_include_nnode(head, b_read_rs - size_read))
 		return (1);
 	return (0);
 }
@@ -137,7 +141,7 @@ int	ft_verify_nlend(t_list **lst)
 	while (tail)
 	{
 		i = 0;
-		while (((char *)tail->content)[i] != 0 && i < BUFFER_SIZE)
+		while (((char *)tail->content)[i] != 0)
 		{
 			if (((char *)tail->content)[i] == '\n')
 				return (count + 1);
@@ -148,6 +152,6 @@ int	ft_verify_nlend(t_list **lst)
 		tail = tail->next;
 	}
 	if (((char *)aux->content)[0] == 0)
-		return (count + 1);
+		return (count);
 	return (0);
 }
