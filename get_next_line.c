@@ -6,16 +6,16 @@
 /*   By: rgomes-d <rgomes-d@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 12:47:47 by rgomes-d          #+#    #+#             */
-/*   Updated: 2025/08/04 14:00:19 by rgomes-d         ###   ########.fr       */
+/*   Updated: 2025/08/08 13:44:31 by rgomes-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int		ft_include_nnode(t_list **lst, char *str);
-char	*ft_fillnl(t_list **lst, int size_nl);
-int		ft_verify_nlend(t_list **lst);
-int		ft_fillstock(int fd, t_list **head);
+static int	ft_include_nnode(t_list **lst, char *str);
+static char	*ft_fillnl(t_list **lst, int size_nl);
+static int	ft_verify_nlend(t_list **lst);
+static int	ft_fillstock(int fd, t_list **head);
 
 char	*get_next_line(int fd)
 {
@@ -45,11 +45,10 @@ char	*get_next_line(int fd)
 	return (rtn);
 }
 
-int	ft_fillstock(int fd, t_list **head)
+static int	ft_fillstock(int fd, t_list **head)
 {
 	int		size_read;
 	char	*b_read;
-	char	*b_read_rs;
 
 	b_read = malloc(BUFFER_SIZE + 1);
 	if (!b_read)
@@ -60,19 +59,15 @@ int	ft_fillstock(int fd, t_list **head)
 	if ((size_read < 0) || (size_read == 0 && !*head))
 		return (1);
 	b_read[size_read] = 0;
-	b_read_rs = (char *)malloc(size_read + 1);
-	if (!b_read_rs)
+	if (ft_include_nnode(head, b_read))
+	{
+		free(b_read);
 		return (1);
-	b_read_rs[size_read] = 0;
-	while (*b_read != '\0')
-		*(b_read_rs++) = *(b_read++);
-	free(b_read - size_read);
-	if (ft_include_nnode(head, b_read_rs - size_read))
-		return (1);
+	}
 	return (0);
 }
 
-int	ft_include_nnode(t_list **lst, char *str)
+static int	ft_include_nnode(t_list **lst, char *str)
 {
 	t_list	*aux;
 	t_list	*tail;
@@ -100,7 +95,7 @@ int	ft_include_nnode(t_list **lst, char *str)
 	return (0);
 }
 
-char	*ft_fillnl(t_list **lst, int size_nl)
+static char	*ft_fillnl(t_list **lst, int size_nl)
 {
 	t_list	*aux;
 	int		i;
@@ -118,18 +113,18 @@ char	*ft_fillnl(t_list **lst, int size_nl)
 		while (i_rtn < size_nl && (((char *)aux->content)[i] != 0
 			|| ((char *)aux->content)[0] == 0))
 			rtn[i_rtn++] = ((char *)aux->content)[i++];
-		if (((char *)aux->content)[i] == 0 && i > 0)
+		if (((char *)aux->content)[i] == 0 && i >= 0)
 			*lst = aux->next;
-		if (((char *)aux->content)[i] == 0 && i > 0)
+		if (((char *)aux->content)[i] == 0 && i >= 0)
 			ft_cleanls(&aux, 0);
-		else
-			ft_lst_content_substr(&*lst, i);
+		else if (ft_lst_content_substr(&*lst, i, rtn))
+			return (NULL);
 	}
 	rtn[i_rtn] = 0;
 	return (rtn);
 }
 
-int	ft_verify_nlend(t_list **lst)
+static int	ft_verify_nlend(t_list **lst)
 {
 	t_list	*tail;
 	t_list	*aux;

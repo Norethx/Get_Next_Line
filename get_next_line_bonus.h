@@ -6,7 +6,7 @@
 /*   By: rgomes-d <rgomes-d@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 14:12:48 by rgomes-d          #+#    #+#             */
-/*   Updated: 2025/08/04 13:55:41 by rgomes-d         ###   ########.fr       */
+/*   Updated: 2025/08/08 13:44:45 by rgomes-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,12 @@
 #  define BUFFER_SIZE 2
 # endif
 
-# ifndef FILE_DESCRIPTORS
-#  define FILE_DESCRIPTORS 1048576
-# endif
+# define FILE_DESCRIPTORS 1048576
 
 # include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
-
-typedef struct s_fd_list
-{
-	int				fd;
-	struct s_list	*content;
-	struct sfd_list	*next;
-}					t_fd_list;
 
 typedef struct s_list
 {
@@ -41,6 +32,6 @@ typedef struct s_list
 
 char				*get_next_line(int fd);
 void				*ft_cleanls(t_list **lst, int t_clean);
-void				ft_lst_content_substr(t_list **lst, int loc);
+int					ft_lst_content_substr(t_list **lst, int loc, char *sec);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: rgomes-d <rgomes-d@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 19:03:22 by rgomes-d          #+#    #+#             */
-/*   Updated: 2025/08/04 11:53:05 by rgomes-d         ###   ########.fr       */
+/*   Updated: 2025/08/08 13:44:38 by rgomes-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,22 @@ void	*ft_cleanls(t_list **lst, int t_clean)
 	return ((void *)0);
 }
 
-void	ft_lst_content_substr(t_list **lst, int loc)
+int	ft_lst_content_substr(t_list **lst, int loc, char *sec)
 {
 	int		i;
 	char	*new_str;
 	t_list	*aux;
 
-	i = 0;
+	i = loc;
 	aux = *lst;
 	while (((char *)aux->content)[i] != 0)
 		i++;
-	new_str = malloc((i - loc) + 1);
+	new_str = malloc((i - loc + 1));
+	if (!new_str)
+	{
+		free(sec);
+		return (1);
+	}
 	new_str[i - loc] = 0;
 	i = 0;
 	while (((char *)aux->content)[i + loc] != 0)
@@ -57,4 +62,5 @@ void	ft_lst_content_substr(t_list **lst, int loc)
 	}
 	free(aux->content);
 	aux->content = new_str;
+	return (0);
 }
